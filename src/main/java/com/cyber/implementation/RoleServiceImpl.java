@@ -1,41 +1,39 @@
 package com.cyber.implementation;
 
 import com.cyber.dto.RoleDTO;
+import com.cyber.entity.Role;
+import com.cyber.mapper.RoleMapper;
+import com.cyber.repository.RoleRepository;
 import com.cyber.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class RoleServiceImpl extends AbstractMapService<RoleDTO,Long> implements RoleService {
+public class RoleServiceImpl implements RoleService {
+
+    private RoleRepository roleRepository;
+    private RoleMapper roleMapper;
+
+    public RoleServiceImpl(@Lazy RoleRepository roleRepository, RoleMapper roleMapper) {
+        this.roleRepository = roleRepository;
+        this.roleMapper = roleMapper;
+    }
 
     @Override
-    public RoleDTO save(RoleDTO object) {
-        return super.save(object.getId(), object);
+    public List<RoleDTO> listAllRoles() {
+
+        List<Role> list = roleRepository.findAll();
+        //map entity to dto
+        return list.stream().map(obj -> {return roleMapper.convertToDto(obj);}).collect(Collectors.toList());
     }
 
     @Override
     public RoleDTO findById(Long id) {
-        return super.findById(id);
-    }
-
-    @Override
-    public List<RoleDTO> findAll() {
-        return super.findAll();
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        super.deleteById(id);
-    }
-
-    @Override
-    public void update(RoleDTO object) {
-        super.update(object.getId(), object);
-    }
-
-    @Override
-    public void delete(RoleDTO object) {
-        super.delete(object);
+        Role role = roleRepository.findById(id).get();
+        return roleMapper.convertToDto(role);
     }
 }

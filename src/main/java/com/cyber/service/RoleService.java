@@ -2,7 +2,10 @@ package com.cyber.service;
 
 import com.cyber.dto.RoleDTO;
 
-public interface RoleService extends CrudService<RoleDTO,Long>{
+import java.util.List;
 
-    // In RoleDTO unique property is [Long id] --- PK in DB !!
+public interface RoleService {
+
+    List<RoleDTO> listAllRoles();
+    RoleDTO findById(Long id);
 }
