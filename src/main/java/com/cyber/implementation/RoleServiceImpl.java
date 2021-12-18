@@ -5,7 +5,6 @@ import com.cyber.entity.Role;
 import com.cyber.mapper.RoleMapper;
 import com.cyber.repository.RoleRepository;
 import com.cyber.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
