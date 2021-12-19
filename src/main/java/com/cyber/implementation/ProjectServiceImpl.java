@@ -2,13 +2,11 @@ package com.cyber.implementation;
 
 import com.cyber.dto.ProjectDTO;
 import com.cyber.entity.Project;
-import com.cyber.entity.User;
 import com.cyber.enums.Status;
 import com.cyber.mapper.ProjectMapper;
 import com.cyber.mapper.UserMapper;
 import com.cyber.repository.ProjectRepository;
 import com.cyber.service.ProjectService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
