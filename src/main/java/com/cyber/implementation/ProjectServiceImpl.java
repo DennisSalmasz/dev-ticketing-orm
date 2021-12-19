@@ -2,6 +2,7 @@ package com.cyber.implementation;
 
 import com.cyber.dto.ProjectDTO;
 import com.cyber.entity.Project;
+import com.cyber.entity.User;
 import com.cyber.enums.Status;
 import com.cyber.mapper.ProjectMapper;
 import com.cyber.mapper.UserMapper;
@@ -29,7 +30,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDTO getByProjectCode(String code) {
-        return null;
+        Project project = projectRepository.findByProjectCode(code);
+        return projectMapper.convertToDto(project);
     }
 
     @Override
@@ -48,12 +50,25 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDTO update(ProjectDTO dto) {
-        return null;
+    public void update(ProjectDTO dto) {
+        Project project = projectRepository.findByProjectCode(dto.getProjectCode());
+        Project convertedProject = projectMapper.convertToEntity(dto);
+        convertedProject.setId(project.getId());
+        convertedProject.setProjectStatus(project.getProjectStatus());
+        projectRepository.save(convertedProject);
     }
 
     @Override
     public void delete(String code) {
+        Project project = projectRepository.findByProjectCode(code);
+        project.setIsDeleted(true); //now, related row in DB will not be deleted !!
+        projectRepository.save(project);
+    }
 
+    @Override
+    public void complete(String code) {
+        Project project = projectRepository.findByProjectCode(code);
+        project.setProjectStatus(Status.COMPLETE);
+        projectRepository.save(project);
     }
 }

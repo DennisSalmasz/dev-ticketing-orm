@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "projects")
-@Where(clause = "is_deleted=false") //this will automatically be added to each ProjectRepository query !!
+@Where(clause = "is_deleted=false") //this will automatically be added to each ProjectRepository query - when query is executed, deleted data will not appear !!
 public class Project extends BaseEntity{
 
     @Column(unique = true) //if same project code entered, will crash program - server side validation!!
