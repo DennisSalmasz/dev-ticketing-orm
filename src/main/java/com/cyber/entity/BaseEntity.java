@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -28,4 +25,22 @@ public class BaseEntity {
     private Long lastUpdateUserId;
 
     private Boolean isDeleted = false;
+
+    //Persist - save data in DB
+    //PrePersist - this method will run before saving each data in DB
+    @PrePersist
+    private void onPrePersist(){
+        this.insertDateTime=LocalDateTime.now();
+        this.lastUpdateDateTime=LocalDateTime.now();
+        //this will be dynamic - in security - who did what, when...
+        this.insertUserId=1L;
+        this.lastUpdateUserId=1L;
+    }
+
+    //this will run before each data update in DB
+    @PreUpdate
+    private void onPreUpdate(){
+        this.lastUpdateDateTime=LocalDateTime.now();
+        this.lastUpdateUserId=1L;
+    }
 }
