@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @Where(clause = "is_deleted=false") //this will automatically be added to each ProjectRepository query !!
 public class Project extends BaseEntity{
 
-    @Column(unique = true) //if same project code entered, will crash program !!
+    @Column(unique = true) //if same project code entered, will crash program - server side validation!!
     private String projectCode;
 
     private String projectName;
