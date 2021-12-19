@@ -43,7 +43,7 @@ public class ProjectServiceImpl implements ProjectService {
         dto.setProjectStatus(Status.OPEN);
         Project obj = projectMapper.convertToEntity(dto);
         //need to convert assigned manager to entity as well - it is dependant !!
-        obj.setAssignedManager(userMapper.convertToEntity(dto.getAssignedManager()));
+        //obj.setAssignedManager(userMapper.convertToEntity(dto.getAssignedManager()));
         projectRepository.save(obj);
     }
 
