@@ -4,6 +4,8 @@ import com.cyber.dto.ProjectDTO;
 import com.cyber.dto.TaskDTO;
 import com.cyber.dto.UserDTO;
 import com.cyber.enums.Status;
+import com.cyber.service.ProjectService;
+import com.cyber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,30 +21,33 @@ import java.util.stream.Collectors;
 @RequestMapping("/project")
 public class ProjectController {
 
-//    @Autowired
-//    ProjectService projectService;
-//    @Autowired
-//    UserService userService; // we just basically put all the users as managers !!
+    private ProjectService projectService;
+    private UserService userService; // we just basically put all the users as managers !!
+
+    public ProjectController(ProjectService projectService, UserService userService) {
+        this.projectService = projectService;
+        this.userService = userService;
+    }
+
 //    @Autowired
 //    TaskService taskService;
-//
-//    @GetMapping("/create")
-//    public String createProject(Model model){
-//
-//        model.addAttribute("project", new ProjectDTO());
-//        model.addAttribute("managers",userService.findManagers()); // assign managers
-//        model.addAttribute("projects",projectService.findAll());
-//
-//        return "/project/create";
-//    }
-//
-//    @PostMapping("/create")
-//    public String insertProject(ProjectDTO project, Model model){
-//        projectService.save(project);
-//        project.setProjectStatus(Status.OPEN);
-//        return "redirect:/project/create";
-//    }
-//
+
+    @GetMapping("/create")
+    public String createProject(Model model){
+
+        model.addAttribute("project", new ProjectDTO());
+        model.addAttribute("managers",userService.listAllByRole("manager")); // assign managers
+        model.addAttribute("projects",projectService.listAllProjects());
+
+        return "/project/create";
+    }
+
+    @PostMapping("/create")
+    public String insertProject(ProjectDTO project, Model model){
+        projectService.save(project);
+        return "redirect:/project/create";
+    }
+
 //    @GetMapping("/delete/{projectCode}")
 //    public String deleteProject(@PathVariable("projectCode") String projectCode){
 //        projectService.deleteById(projectCode);
