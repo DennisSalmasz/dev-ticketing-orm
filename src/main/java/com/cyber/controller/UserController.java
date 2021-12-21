@@ -4,6 +4,7 @@ import com.cyber.dto.UserDTO;
 import com.cyber.service.RoleService;
 import com.cyber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("user")
 public class UserController {
 
-    @Autowired
     RoleService roleService;
-    @Autowired
     UserService userService;
+
+    public UserController(@Lazy RoleService roleService, UserService userService) {
+        this.roleService = roleService;
+        this.userService = userService;
+    }
 
     @GetMapping("create")
     public String createUser(Model model){

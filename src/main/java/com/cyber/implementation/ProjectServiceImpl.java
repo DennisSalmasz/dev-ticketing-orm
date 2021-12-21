@@ -1,12 +1,16 @@
 package com.cyber.implementation;
 
 import com.cyber.dto.ProjectDTO;
+import com.cyber.dto.UserDTO;
 import com.cyber.entity.Project;
+import com.cyber.entity.User;
 import com.cyber.enums.Status;
 import com.cyber.mapper.ProjectMapper;
 import com.cyber.mapper.UserMapper;
 import com.cyber.repository.ProjectRepository;
 import com.cyber.service.ProjectService;
+import com.cyber.service.TaskService;
+import com.cyber.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +20,18 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
-    ProjectRepository projectRepository;
-    ProjectMapper projectMapper;
+    private ProjectRepository projectRepository;
+    private ProjectMapper projectMapper;
     private UserMapper userMapper;
+    private UserService userService;
+    private TaskService taskService;
 
-    public ProjectServiceImpl(@Lazy ProjectRepository projectRepository, ProjectMapper projectMapper, UserMapper userMapper) {
+    public ProjectServiceImpl(@Lazy ProjectRepository projectRepository, ProjectMapper projectMapper, UserMapper userMapper, UserService userService, TaskService taskService) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.userMapper = userMapper;
+        this.userService = userService;
+        this.taskService = taskService;
     }
 
     @Override
@@ -60,7 +68,14 @@ public class ProjectServiceImpl implements ProjectService {
     public void delete(String code) {
         Project project = projectRepository.findByProjectCode(code);
         project.setIsDeleted(true); //now, related row in DB will not be deleted !!
+
+        //when I delete a project, its tasks should be deleted as well
+
+        //now I am able to create another project with the same project code
+        project.setProjectCode(project.getProjectCode() + "-" + project.getId());
         projectRepository.save(project);
+
+        taskService.deleteByProject(projectMapper.convertToDto(project));
     }
 
     @Override
@@ -69,4 +84,20 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectStatus(Status.COMPLETE);
         projectRepository.save(project);
     }
+
+    @Override
+    public List<ProjectDTO> listAllProjectDetails() {
+        UserDTO currentUserDTO = userService.findByUserName("deniz.salmazs@gmail.com");
+        User user = userMapper.convertToEntity(currentUserDTO);
+        List<Project> list = projectRepository.findAllByAssignedManager(user);
+
+        return list.stream().map(project -> {
+                    ProjectDTO obj = projectMapper.convertToDto(project);
+                    obj.setIncompleteTaskCount(taskService.totalUncompletedTasks(obj.getProjectCode()));
+                    obj.setCompleteTaskCount(taskService.totalCompletedTasks(obj.getProjectCode()));
+                    return obj;
+                }).collect(Collectors.toList());
+    }
+
+
 }

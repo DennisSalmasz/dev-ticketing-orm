@@ -1,14 +1,18 @@
 package com.cyber.controller;
 
 import com.cyber.dto.ProjectDTO;
+import com.cyber.dto.UserDTO;
 import com.cyber.service.ProjectService;
 import com.cyber.service.UserService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/project")
@@ -17,7 +21,7 @@ public class ProjectController {
     private ProjectService projectService;
     private UserService userService; // we just basically put all the users as managers !!
 
-    public ProjectController(ProjectService projectService, UserService userService) {
+    public ProjectController(@Lazy ProjectService projectService, UserService userService) {
         this.projectService = projectService;
         this.userService = userService;
     }
@@ -60,5 +64,12 @@ public class ProjectController {
     public String updateProject(@PathVariable("projectCode") String projectCode, ProjectDTO project, Model model){
         projectService.update(project);
         return "redirect:/project/create";
+    }
+
+    @GetMapping("/manager/complete")
+    public String getProjectByManager(Model model){
+        List<ProjectDTO> projects = projectService.listAllProjectDetails();
+        model.addAttribute("projects",projects);
+        return "/manager/project-status";
     }
 }
