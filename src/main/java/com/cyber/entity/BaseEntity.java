@@ -17,7 +17,7 @@ public class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     //@Column - hibernate server validation structure
     @Column(nullable = false,updatable = false)
