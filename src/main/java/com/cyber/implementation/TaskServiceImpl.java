@@ -1,7 +1,6 @@
 package com.cyber.implementation;
 
 import com.cyber.dto.TaskDTO;
-import com.cyber.entity.Project;
 import com.cyber.entity.Task;
 import com.cyber.enums.Status;
 import com.cyber.mapper.TaskMapper;
@@ -28,6 +27,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDTO findById(Long id) {
+        Optional<Task> task = taskRepository.findById(id);
+        if(task.isPresent()){
+            return taskMapper.convertToDto(task.get());
+        }
         return null;
     }
 
@@ -47,7 +50,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void update(TaskDTO dto) {
-
+        Optional<Task> task = taskRepository.findById(dto.getId());
+        Task convertedTask = taskMapper.convertToEntity(dto);
+        if(task.isPresent()){
+            convertedTask.setId(task.get().getId());
+            convertedTask.setTaskStatus(task.get().getTaskStatus());
+            convertedTask.setAssignedDate(task.get().getAssignedDate());
+            taskRepository.save(convertedTask);
+        }
     }
 
     @Override
