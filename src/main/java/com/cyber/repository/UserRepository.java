@@ -1,5 +1,7 @@
 package com.cyber.repository;
 
+import com.cyber.dto.TaskDTO;
+import com.cyber.entity.Task;
 import com.cyber.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -19,4 +21,8 @@ public interface UserRepository extends JpaRepository<User,Long> {
     void deleteByUserName(String username);
 
     List<User> findAllByRoleDescriptionIgnoreCase(String description);
+
+
+
+
 }
