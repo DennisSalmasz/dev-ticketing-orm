@@ -1,6 +1,7 @@
 package com.cyber.controller;
 
 import com.cyber.dto.TaskDTO;
+import com.cyber.enums.Status;
 import com.cyber.service.ProjectService;
 import com.cyber.service.TaskService;
 import com.cyber.service.UserService;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/task")
@@ -60,5 +63,12 @@ public class TaskController {
     public String updateTask(@PathVariable("id") Long id,TaskDTO task,Model model) {
         taskService.update(task);
         return "redirect:/task/create";
+    }
+
+    @GetMapping("employee")
+    public String edit(Model model){
+        List<TaskDTO> tasks = taskService.listAllTasksByStatusIsNot(Status.COMPLETE);
+        model.addAttribute("tasks",tasks);
+        return "task/employee-tasks";
     }
 }

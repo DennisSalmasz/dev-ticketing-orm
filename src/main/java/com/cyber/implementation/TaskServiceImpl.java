@@ -94,4 +94,9 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.findAllByProject(projectMapper.convertToEntity(project))
                 .stream().map(taskMapper::convertToDto).collect(Collectors.toList());
     }
+
+    @Override
+    public List<TaskDTO> listAllTasksByStatusIsNot(Status status) {
+        return null;
+    }
 }
