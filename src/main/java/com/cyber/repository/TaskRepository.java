@@ -2,6 +2,8 @@ package com.cyber.repository;
 
 import com.cyber.entity.Project;
 import com.cyber.entity.Task;
+import com.cyber.entity.User;
+import com.cyber.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,4 +24,6 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
     int totalCompletedTasks(String projectCode);
 
     List<Task> findAllByProject(Project project);
+
+    List<Task> findAllByTaskStatusIsNotAndAssignedEmployee(Status status, User user);
 }

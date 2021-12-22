@@ -3,11 +3,15 @@ package com.cyber.implementation;
 import com.cyber.dto.ProjectDTO;
 import com.cyber.dto.TaskDTO;
 import com.cyber.entity.Task;
+import com.cyber.entity.User;
 import com.cyber.enums.Status;
 import com.cyber.mapper.ProjectMapper;
 import com.cyber.mapper.TaskMapper;
 import com.cyber.repository.TaskRepository;
+import com.cyber.repository.UserRepository;
 import com.cyber.service.TaskService;
+import com.cyber.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +23,21 @@ import java.util.stream.Collectors;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    TaskRepository taskRepository;
+    private TaskRepository taskRepository;
     private TaskMapper taskMapper;
     private ProjectMapper projectMapper;
+    //private UserRepository userRepository;
 
-    public TaskServiceImpl(@Lazy TaskRepository taskRepository, TaskMapper taskMapper, ProjectMapper projectMapper) {
+    @Autowired @Lazy
+    private UserRepository userRepository;
+
+    public TaskServiceImpl(@Lazy TaskRepository taskRepository, TaskMapper taskMapper, ProjectMapper projectMapper
+               //         , UserRepository userRepository
+    ) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
         this.projectMapper = projectMapper;
+        //this.userRepository = userRepository;
     }
 
     @Override
@@ -97,6 +108,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskDTO> listAllTasksByStatusIsNot(Status status) {
-        return null;
+        User user = userRepository.findByUserName("hello@bootstrap.com");
+        List<Task> list = taskRepository.findAllByTaskStatusIsNotAndAssignedEmployee(status, user);
+        return list.stream().map(taskMapper::convertToDto).collect(Collectors.toList());
     }
+
 }
