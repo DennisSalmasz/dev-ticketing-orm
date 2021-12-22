@@ -72,4 +72,10 @@ public class ProjectController {
         model.addAttribute("projects",projects);
         return "/manager/project-status";
     }
+
+    @GetMapping("manager/complete/{projectCode}")
+    public String manager_completed(@PathVariable("projectCode") String projectCode,Model model){
+        projectService.complete(projectCode);
+        return "redirect:/project/manager/complete";
+    }
 }
