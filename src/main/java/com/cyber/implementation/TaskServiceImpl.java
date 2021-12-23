@@ -120,5 +120,14 @@ public class TaskServiceImpl implements TaskService {
         return tasks.stream().map(taskMapper::convertToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public void updateStatus(TaskDTO dto) {
+        Optional<Task> task = taskRepository.findById(dto.getId());
+        if(task.isPresent()){
+            task.get().setTaskStatus(dto.getTaskStatus());
+            taskRepository.save(task.get());
+        }
+    }
+
 
 }
