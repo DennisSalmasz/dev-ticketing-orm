@@ -1,9 +1,14 @@
 package com.cyber.implementation;
 
+import com.cyber.dto.ProjectDTO;
+import com.cyber.dto.TaskDTO;
 import com.cyber.dto.UserDTO;
 import com.cyber.entity.User;
+import com.cyber.exception.TicketNGProjectException;
 import com.cyber.mapper.UserMapper;
 import com.cyber.repository.UserRepository;
+import com.cyber.service.ProjectService;
+import com.cyber.service.TaskService;
 import com.cyber.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
@@ -17,10 +22,14 @@ public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
     UserMapper userMapper;
+    ProjectService projectService;
+    TaskService taskService;
 
-    public UserServiceImpl(@Lazy UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(@Lazy UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, TaskService taskService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.projectService = projectService;
+        this.taskService = taskService;
     }
 
     @Override
@@ -60,8 +69,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(String username) {
+    public void delete(String username) throws TicketNGProjectException {
         User user = userRepository.findByUserName(username);
+
+        //check if user is deleted in DB to avoid the crash of the app !!
+        if(user == null){
+            throw new TicketNGProjectException("User does not exist !!");
+        }
+
+        //check if user can be deleted
+        if(!checkIfUserCanBeDeleted(user)){
+            throw new TicketNGProjectException("User cannot be deleted. It is linked by a project or a task !!");
+        }
+
+        //since username is unique, if I delete it, it will be set true with the following code in DB -- so, I cannot create with same username
+        user.setUserName(user.getUserName() + "-" + user.getId());
+
         user.setIsDeleted(true); //now, related row in DB will not be deleted !!
         userRepository.save(user);
     }
@@ -75,5 +98,20 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> listAllByRole(String role) {
         List<User> users = userRepository.findAllByRoleDescriptionIgnoreCase(role);
         return users.stream().map(obj -> {return userMapper.convertToDto(obj);}).collect(Collectors.toList());
+    }
+
+    @Override
+    public Boolean checkIfUserCanBeDeleted(User user) {
+
+        switch (user.getRole().getDescription()){
+            case "Manager":
+                List<ProjectDTO> projectList = projectService.readAllByAssignedManager(user);
+                return projectList.size() == 0;
+            case "Employee":
+                List<TaskDTO> taskList = taskService.readAllByEmployee(user);
+                return taskList.size() == 0;
+            default:
+                return true;
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.cyber.service;
 import com.cyber.dto.ProjectDTO;
 import com.cyber.dto.TaskDTO;
 import com.cyber.entity.Task;
+import com.cyber.entity.User;
 import com.cyber.enums.Status;
 
 import java.util.List;
@@ -29,6 +30,8 @@ public interface TaskService {
     void updateStatus(TaskDTO dto);
 
     List<TaskDTO> listAllTasksByStatus(Status status);
+
+    List<TaskDTO> readAllByEmployee(User employee);
 
 
 }

@@ -1,6 +1,7 @@
 package com.cyber.service;
 
 import com.cyber.dto.ProjectDTO;
+import com.cyber.entity.User;
 
 import java.util.List;
 
@@ -13,4 +14,5 @@ public interface ProjectService {
     void delete(String code);
     void complete(String code);
     List<ProjectDTO> listAllProjectDetails();
+    List<ProjectDTO> readAllByAssignedManager(User user);
 }

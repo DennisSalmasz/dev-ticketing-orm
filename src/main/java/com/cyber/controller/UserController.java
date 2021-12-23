@@ -1,6 +1,7 @@
 package com.cyber.controller;
 
 import com.cyber.dto.UserDTO;
+import com.cyber.exception.TicketNGProjectException;
 import com.cyber.service.RoleService;
 import com.cyber.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class UserController {
     }
 
     @GetMapping("delete/{username}")
-    public String deleteUser(@PathVariable("username") String username){
+    public String deleteUser(@PathVariable("username") String username) throws TicketNGProjectException {
         userService.delete(username);
         return "redirect:/user/create";
     }
