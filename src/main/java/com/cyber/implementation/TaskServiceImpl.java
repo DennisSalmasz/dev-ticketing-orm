@@ -2,11 +2,11 @@ package com.cyber.implementation;
 
 import com.cyber.dto.ProjectDTO;
 import com.cyber.dto.TaskDTO;
+import com.cyber.entity.Project;
 import com.cyber.entity.Task;
 import com.cyber.entity.User;
 import com.cyber.enums.Status;
 import com.cyber.mapper.MapperUtil;
-import com.cyber.mapper.ProjectMapper;
 import com.cyber.repository.TaskRepository;
 import com.cyber.repository.UserRepository;
 import com.cyber.service.TaskService;
@@ -22,14 +22,11 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements TaskService {
 
     private TaskRepository taskRepository;
-    //private TaskMapper taskMapper;
-    private ProjectMapper projectMapper;
     private UserRepository userRepository;
     private MapperUtil mapperUtil;
 
-    public TaskServiceImpl(@Lazy  TaskRepository taskRepository, ProjectMapper projectMapper, @Lazy  UserRepository userRepository, MapperUtil mapperUtil) {
+    public TaskServiceImpl(@Lazy  TaskRepository taskRepository, @Lazy UserRepository userRepository, MapperUtil mapperUtil) {
         this.taskRepository = taskRepository;
-        this.projectMapper = projectMapper;
         this.userRepository = userRepository;
         this.mapperUtil = mapperUtil;
     }
@@ -96,7 +93,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<TaskDTO> listAllByProject(ProjectDTO project) {
-        return taskRepository.findAllByProject(projectMapper.convertToEntity(project))
+        return taskRepository.findAllByProject(mapperUtil.convert(project,new Project()))
                 .stream().map(obj -> {return mapperUtil.convert(obj,new TaskDTO());}).collect(Collectors.toList());
     }
 

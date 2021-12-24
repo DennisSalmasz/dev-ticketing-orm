@@ -3,7 +3,6 @@ package com.cyber.implementation;
 import com.cyber.dto.RoleDTO;
 import com.cyber.entity.Role;
 import com.cyber.mapper.MapperUtil;
-import com.cyber.mapper.RoleMapper;
 import com.cyber.repository.RoleRepository;
 import com.cyber.service.RoleService;
 import org.springframework.context.annotation.Lazy;
@@ -16,7 +15,6 @@ import java.util.stream.Collectors;
 public class RoleServiceImpl implements RoleService {
 
     private RoleRepository roleRepository;
-    //private RoleMapper roleMapper;
     private MapperUtil mapperUtil;
 
     public RoleServiceImpl(@Lazy RoleRepository roleRepository, MapperUtil mapperUtil) {
@@ -28,7 +26,6 @@ public class RoleServiceImpl implements RoleService {
     public List<RoleDTO> listAllRoles() {
 
         List<Role> list = roleRepository.findAll();
-        //map entity to dto
         return list.stream().map(obj -> {return mapperUtil.convert(obj,new RoleDTO());}).collect(Collectors.toList());
     }
 

@@ -6,7 +6,6 @@ import com.cyber.dto.UserDTO;
 import com.cyber.entity.User;
 import com.cyber.exception.TicketNGProjectException;
 import com.cyber.mapper.MapperUtil;
-import com.cyber.mapper.UserMapper;
 import com.cyber.repository.UserRepository;
 import com.cyber.service.ProjectService;
 import com.cyber.service.TaskService;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
-    //UserMapper userMapper;
     private ProjectService projectService;
     private TaskService taskService;
     private MapperUtil mapperUtil;
@@ -37,7 +35,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> listAllUsers() {
         List<User> list = userRepository.findAll(Sort.by("firstName"));
-        //map entity into dto
         return list.stream().map(obj -> {return mapperUtil.convert(obj,new UserDTO());}).collect(Collectors.toList());
     }
 

@@ -6,8 +6,6 @@ import com.cyber.entity.Project;
 import com.cyber.entity.User;
 import com.cyber.enums.Status;
 import com.cyber.mapper.MapperUtil;
-import com.cyber.mapper.ProjectMapper;
-import com.cyber.mapper.UserMapper;
 import com.cyber.repository.ProjectRepository;
 import com.cyber.service.ProjectService;
 import com.cyber.service.TaskService;
@@ -22,15 +20,12 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
 
     private ProjectRepository projectRepository;
-   //private ProjectMapper projectMapper;
-    private UserMapper userMapper;
     private UserService userService;
     private TaskService taskService;
     private MapperUtil mapperUtil;
 
-    public ProjectServiceImpl(@Lazy ProjectRepository projectRepository, UserMapper userMapper, UserService userService, TaskService taskService, MapperUtil mapperUtil) {
+    public ProjectServiceImpl(@Lazy ProjectRepository projectRepository, UserService userService, TaskService taskService, MapperUtil mapperUtil) {
         this.projectRepository = projectRepository;
-        this.userMapper = userMapper;
         this.userService = userService;
         this.taskService = taskService;
         this.mapperUtil = mapperUtil;
@@ -90,7 +85,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectDTO> listAllProjectDetails() {
         UserDTO currentUserDTO = userService.findByUserName("deniz.salmazs@gmail.com");
-        User user = userMapper.convertToEntity(currentUserDTO);
+        User user = mapperUtil.convert(currentUserDTO,new User());
         List<Project> list = projectRepository.findAllByAssignedManager(user);
 
         return list.stream().map(project -> {
