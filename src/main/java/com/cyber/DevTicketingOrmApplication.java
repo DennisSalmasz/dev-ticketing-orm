@@ -12,6 +12,7 @@ public class DevTicketingOrmApplication {
         SpringApplication.run(DevTicketingOrmApplication.class, args);
     }
 
+    //third party beans need to be inside @Configuration -- @SpringBootApplication covers @Configuration !!
     @Bean
     public ModelMapper mapper(){
         return new ModelMapper();

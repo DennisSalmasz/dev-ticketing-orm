@@ -5,6 +5,7 @@ import com.cyber.dto.TaskDTO;
 import com.cyber.dto.UserDTO;
 import com.cyber.entity.User;
 import com.cyber.exception.TicketNGProjectException;
+import com.cyber.mapper.MapperUtil;
 import com.cyber.mapper.UserMapper;
 import com.cyber.repository.UserRepository;
 import com.cyber.service.ProjectService;
@@ -21,35 +22,35 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
-    UserMapper userMapper;
-    ProjectService projectService;
-    TaskService taskService;
+    //UserMapper userMapper;
+    private ProjectService projectService;
+    private TaskService taskService;
+    private MapperUtil mapperUtil;
 
-    public UserServiceImpl(@Lazy UserRepository userRepository, UserMapper userMapper, @Lazy ProjectService projectService, TaskService taskService) {
+    public UserServiceImpl(@Lazy UserRepository userRepository, @Lazy ProjectService projectService, TaskService taskService, MapperUtil mapperUtil) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
         this.projectService = projectService;
         this.taskService = taskService;
+        this.mapperUtil = mapperUtil;
     }
 
     @Override
     public List<UserDTO> listAllUsers() {
         List<User> list = userRepository.findAll(Sort.by("firstName"));
         //map entity into dto
-        return list.stream().map(obj -> {return userMapper.convertToDto(obj);}).collect(Collectors.toList());
+        return list.stream().map(obj -> {return mapperUtil.convert(obj,new UserDTO());}).collect(Collectors.toList());
     }
 
     @Override
     public UserDTO findByUserName(String username) {
 
         User user = userRepository.findByUserName(username);
-        return userMapper.convertToDto(user);
+        return mapperUtil.convert(user,new UserDTO());
     }
 
     @Override
     public void save(UserDTO dto) {
-        User obj = userMapper.convertToEntity(dto);
-        //save into DB
+        User obj = mapperUtil.convert(dto,new User());
         userRepository.save(obj);
     }
 
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService {
         //find current user - that has id
         User user = userRepository.findByUserName(dto.getUserName());
         //map user dto into entity object
-        User convertedUser = userMapper.convertToEntity(dto);
+        User convertedUser = mapperUtil.convert(dto,new User());
         //set id to the converted object
         convertedUser.setId(user.getId());
         //save updated user
@@ -97,7 +98,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> listAllByRole(String role) {
         List<User> users = userRepository.findAllByRoleDescriptionIgnoreCase(role);
-        return users.stream().map(obj -> {return userMapper.convertToDto(obj);}).collect(Collectors.toList());
+        return users.stream().map(obj -> {return mapperUtil.convert(obj,new UserDTO());}).collect(Collectors.toList());
     }
 
     @Override
