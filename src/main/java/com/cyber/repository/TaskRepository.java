@@ -15,6 +15,7 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
 
     List<Task> findAll();
 
+    //JPQL: t.project.projectCode -- JOIN
     @Query("SELECT count(t) FROM Task t WHERE t.project.projectCode = ?1 AND t.taskStatus <> 'COMPLETE'")
     int totalNonCompletedTasks(String projectCode);
 

@@ -2,6 +2,7 @@ package com.cyber.implementation;
 
 import com.cyber.dto.RoleDTO;
 import com.cyber.entity.Role;
+import com.cyber.mapper.MapperUtil;
 import com.cyber.mapper.RoleMapper;
 import com.cyber.repository.RoleRepository;
 import com.cyber.service.RoleService;
@@ -15,11 +16,12 @@ import java.util.stream.Collectors;
 public class RoleServiceImpl implements RoleService {
 
     private RoleRepository roleRepository;
-    private RoleMapper roleMapper;
+    //private RoleMapper roleMapper;
+    private MapperUtil mapperUtil;
 
-    public RoleServiceImpl(@Lazy RoleRepository roleRepository, RoleMapper roleMapper) {
+    public RoleServiceImpl(@Lazy RoleRepository roleRepository, MapperUtil mapperUtil) {
         this.roleRepository = roleRepository;
-        this.roleMapper = roleMapper;
+        this.mapperUtil = mapperUtil;
     }
 
     @Override
@@ -27,12 +29,12 @@ public class RoleServiceImpl implements RoleService {
 
         List<Role> list = roleRepository.findAll();
         //map entity to dto
-        return list.stream().map(obj -> {return roleMapper.convertToDto(obj);}).collect(Collectors.toList());
+        return list.stream().map(obj -> {return mapperUtil.convert(obj,new RoleDTO());}).collect(Collectors.toList());
     }
 
     @Override
     public RoleDTO findById(Long id) {
         Role role = roleRepository.findById(id).get();
-        return roleMapper.convertToDto(role);
+        return mapperUtil.convert(role,new RoleDTO());
     }
 }

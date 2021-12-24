@@ -5,6 +5,7 @@ import com.cyber.dto.UserDTO;
 import com.cyber.entity.Project;
 import com.cyber.entity.User;
 import com.cyber.enums.Status;
+import com.cyber.mapper.MapperUtil;
 import com.cyber.mapper.ProjectMapper;
 import com.cyber.mapper.UserMapper;
 import com.cyber.repository.ProjectRepository;
@@ -21,35 +22,36 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
 
     private ProjectRepository projectRepository;
-    private ProjectMapper projectMapper;
+   //private ProjectMapper projectMapper;
     private UserMapper userMapper;
     private UserService userService;
     private TaskService taskService;
+    private MapperUtil mapperUtil;
 
-    public ProjectServiceImpl(@Lazy ProjectRepository projectRepository, ProjectMapper projectMapper, UserMapper userMapper, UserService userService, TaskService taskService) {
+    public ProjectServiceImpl(@Lazy ProjectRepository projectRepository, UserMapper userMapper, UserService userService, TaskService taskService, MapperUtil mapperUtil) {
         this.projectRepository = projectRepository;
-        this.projectMapper = projectMapper;
         this.userMapper = userMapper;
         this.userService = userService;
         this.taskService = taskService;
+        this.mapperUtil = mapperUtil;
     }
 
     @Override
     public ProjectDTO getByProjectCode(String code) {
         Project project = projectRepository.findByProjectCode(code);
-        return projectMapper.convertToDto(project);
+        return mapperUtil.convert(project,new ProjectDTO());
     }
 
     @Override
     public List<ProjectDTO> listAllProjects() {
         List<Project> projects = projectRepository.findAll();
-        return projects.stream().map(obj -> {return projectMapper.convertToDto(obj);}).collect(Collectors.toList());
+        return projects.stream().map(obj -> {return mapperUtil.convert(obj,new ProjectDTO());}).collect(Collectors.toList());
     }
 
     @Override
     public void save(ProjectDTO dto) {
         dto.setProjectStatus(Status.OPEN);
-        Project obj = projectMapper.convertToEntity(dto);
+        Project obj = mapperUtil.convert(dto,new Project());
         //need to convert assigned manager to entity as well - it is dependant !!
         //obj.setAssignedManager(userMapper.convertToEntity(dto.getAssignedManager()));
         projectRepository.save(obj);
@@ -58,7 +60,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void update(ProjectDTO dto) {
         Project project = projectRepository.findByProjectCode(dto.getProjectCode());
-        Project convertedProject = projectMapper.convertToEntity(dto);
+        Project convertedProject = mapperUtil.convert(dto,new Project());
         convertedProject.setId(project.getId());
         convertedProject.setProjectStatus(project.getProjectStatus());
         projectRepository.save(convertedProject);
@@ -75,7 +77,7 @@ public class ProjectServiceImpl implements ProjectService {
         project.setProjectCode(project.getProjectCode() + "-" + project.getId());
         projectRepository.save(project);
 
-        taskService.deleteByProject(projectMapper.convertToDto(project));
+        taskService.deleteByProject(mapperUtil.convert(project,new ProjectDTO()));
     }
 
     @Override
@@ -92,7 +94,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<Project> list = projectRepository.findAllByAssignedManager(user);
 
         return list.stream().map(project -> {
-                    ProjectDTO obj = projectMapper.convertToDto(project);
+                    ProjectDTO obj = mapperUtil.convert(project,new ProjectDTO());
                     obj.setIncompleteTaskCount(taskService.totalUncompletedTasks(obj.getProjectCode()));
                     obj.setCompleteTaskCount(taskService.totalCompletedTasks(obj.getProjectCode()));
                     return obj;
@@ -102,7 +104,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectDTO> readAllByAssignedManager(User user) {
         List<Project> list = projectRepository.findAllByAssignedManager(user);
-        return list.stream().map(projectMapper::convertToDto).collect(Collectors.toList());
+        return list.stream().map(obj -> {return mapperUtil.convert(obj,new ProjectDTO());}).collect(Collectors.toList());
     }
 
 
